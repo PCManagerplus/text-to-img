@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>縦書き画像変換</title>
+    <!-- Materialize CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        #container {
+            text-align: center;
+        }
+        canvas {
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>縦書き画像変換</h1>
+        <a class="waves-effect waves-light btn modal-trigger" href="#modal1">名前と設定を入力</a>
+        <canvas id="canvas" width="300" height="500"></canvas>
+
+        <!-- Modal Structure -->
+        <div id="modal1" class="modal">
+            <div class="modal-content">
+                <h4>設定を入力</h4>
+                <div class="input-field">
+                    <input id="nameInput" type="text" placeholder="ここに名前を入力してください">
+                    <label for="nameInput">名前</label>
+                </div>
+                <div class="input-field">
+                    <input id="sizeInput" type="number" placeholder="10" min="1" step="1">
+                    <label for="sizeInput">文字サイズ (px)</label>
+                </div>
+                <div class="input-field">
+                    <select id="fontSelect">
+                        <option value="" disabled selected>フォントを選択</option>
+                        <option value="UDDigiKyokashoN-R">UDDigiKyokashoN-R.ttc</option>
+                        <option value="HGRPP1">HGRPP1.TTC</option>
+                        <option value="HGRPRE">HGRPRE.TTC</option>
+                        <option value="HGRSGU">HGRSGU.TTC</option>
+                        <option value="msgothic">msgothic.ttc</option>
+                        <option value="UDDigiKyokashoN-B">UDDigiKyokashoN-B.ttc</option>
+                    </select>
+                    <label for="fontSelect">フォント</label>
+                </div>
+                <div class="input-field">
+                    <input id="filenameInput" type="text" placeholder="画像のファイル名">
+                    <label for="filenameInput">ファイル名</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-close waves-effect waves-green btn-flat" onclick="generateImage()">生成</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Materialize JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var elems = document.querySelectorAll('.modal');
+            M.Modal.init(elems);
+
+            var selects = document.querySelectorAll('select');
+            M.FormSelect.init(selects);
+        });
+
+        function generateImage() {
+            const text = document.getElementById('nameInput').value;
+            const fontSize = parseInt(document.getElementById('sizeInput').value, 10) || 24; // デフォルトは24px
+            const font = document.getElementById('fontSelect').value || 'Arial'; // デフォルトはArial
+            const filename = document.getElementById('filenameInput').value || 'image'; // デフォルトは'image'
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+
+            canvas.width = 300; // 画像の幅
+            canvas.height = text.length * fontSize; // テキストの長さに応じた高さ
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // フォント設定（ここではサンプルとしてArialを使用）
+            ctx.font = `${fontSize}px ${font}`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.translate(50, canvas.height - 50);
+            ctx.rotate(-Math.PI / 2);
+
+            ctx.fillText(text, 0, 0);
+
+            // 画像の生成
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL();
+            link.download = `${filename}.png`; // 指定されたファイル名で保存
+            link.click();
+        }
+    </script>
+</body>
+</html>
